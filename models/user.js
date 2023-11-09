@@ -14,7 +14,7 @@ const User = new Schema({
     lowercase: true,
     trim: true,
     validate: { 
-      validator: (eamil)=> /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+      validator: (email)=> /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
      },
      message: '{VALUE} is not valid email'
    }
