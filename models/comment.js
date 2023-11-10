@@ -1,4 +1,5 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
+const UserSchema = require("./user");
 
 const CommentSchema = mongoose.Schema();
 
@@ -9,13 +10,12 @@ const Comment = new CommentSchema({
   },
   createdAt: {
     type: Date,
-    default: ()=> Date.now()
-  }, 
+    default: () => Date.now(),
+  },
   updatedAt: {
     type: Date,
-    default: ()=> Date.now(),
+    default: () => Date.now(),
   },
- 
-})
+});
 
-module.exports = mongoose.model('Comment', CommenSchema);
+module.exports = mongoose.model("Comment", CommentSchema);

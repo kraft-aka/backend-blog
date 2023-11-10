@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const UserSchema = require("./user");
+const CommentSchema = require("./comment");
 
 const BlogSchema = mongoose.Schema();
 
@@ -21,10 +22,9 @@ const Blog = new BlogSchema({
     type: Date,
     default: () => Date.now(),
   },
-  author: {
-    type: String,
-    type: mongoose.SchemaTypes.UserSchema.ObjectId,
-  },
+  createdBy: UserSchema,
+
+  comment: CommentSchema,
 });
 
 module.exports = mongoose.model("Blog", BlogSchema);
