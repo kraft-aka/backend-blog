@@ -25,6 +25,13 @@ const Blog = new BlogSchema({
   createdBy: UserSchema,
 
   comment: CommentSchema,
+
+  likes: [{
+    user: {
+      type: mongoose.SchemaTypes.ObjectId,
+      ref: 'users',
+    },
+  }],
 });
 
 module.exports = mongoose.model("Blog", BlogSchema);
