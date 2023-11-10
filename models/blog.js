@@ -15,9 +15,11 @@ const Blog = new BlogSchema({
   createdAt: {
     type: Date,
     required: true,
+    default: () => Date.now(),
   },
   updatedAt: {
     type: Date,
+    default: () => Date.now(),
   },
   author: {
     type: String,
