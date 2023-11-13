@@ -1,6 +1,4 @@
 const mongoose = require("mongoose");
-const UserSchema = require("./user");
-const CommentSchema = require("./comment");
 
 const BlogSchema = mongoose.Schema();
 
@@ -8,6 +6,10 @@ const Blog = new BlogSchema({
   title: {
     type: String,
     required: true,
+    unique: [true, "Such blog title exists"],
+    validate: {
+      validator: (titleText) => titleText.trim().length > 0,
+    },
   },
   blogContent: {
     type: String,
@@ -22,16 +24,21 @@ const Blog = new BlogSchema({
     type: Date,
     default: () => Date.now(),
   },
-  createdBy: UserSchema,
-
-  comment: CommentSchema,
-
-  likes: [{
+  createdBy: {
     user: {
       type: mongoose.SchemaTypes.ObjectId,
-      ref: 'users',
+      ref: "users",
     },
-  }],
+  },
+
+  likes: [
+    {
+      user: {
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: "users",
+      },
+    },
+  ],
 });
 
 module.exports = mongoose.model("Blog", BlogSchema);

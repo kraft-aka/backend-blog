@@ -1,12 +1,25 @@
 const mongoose = require("mongoose");
-const UserSchema = require("./user");
 
 const CommentSchema = mongoose.Schema();
 
 const Comment = new CommentSchema({
-  userName: UserSchema,
+  userName: {
+    user: {
+      type: mongoose.SchemaTypes.ObjectId,
+      ref: "users",
+    },
+  },
+
+  blog: {
+    type: mongoose.SchemaTypes.ObjectId,
+    ref: "blogs",
+  },
+
   commentText: {
     type: String,
+    validate: {
+      validator: (txt) => txt.trim().length !== 0,
+    },
   },
   createdAt: {
     type: Date,
