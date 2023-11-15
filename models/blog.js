@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const BlogSchema = mongoose.Schema();
+const BlogSchema = mongoose.Schema;
 
 const Blog = new BlogSchema({
   title: {
@@ -9,6 +9,7 @@ const Blog = new BlogSchema({
     unique: [true, "Such blog title exists"],
     validate: {
       validator: (titleText) => titleText.trim().length > 0,
+      message: '{VALUE} should be provided'
     },
   },
   blogContent: {
@@ -25,20 +26,16 @@ const Blog = new BlogSchema({
     default: () => Date.now(),
   },
   createdBy: {
-    user: {
-      type: mongoose.SchemaTypes.ObjectId,
-      ref: "users",
-    },
+    type: mongoose.SchemaTypes.ObjectId,
+    ref: "User",
   },
 
   likes: [
     {
-      user: {
-        type: mongoose.SchemaTypes.ObjectId,
-        ref: "users",
-      },
+      type: mongoose.SchemaTypes.ObjectId,
+      ref: "User",
     },
   ],
 });
 
-module.exports = mongoose.model("Blog", BlogSchema);
+module.exports = mongoose.model("Blog", Blog);

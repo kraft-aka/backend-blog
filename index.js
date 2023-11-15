@@ -1,5 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const userRouter = require('./routes/user');
 
 require('dotenv').config();
 const app = express();
@@ -18,6 +19,8 @@ app.use(express.json());
 
 // parse url encoded form and send to any router
 app.use(express.urlencoded({ extended: true }));
+
+app.use(userRouter);
 
 app.listen(process.env.PORT || 8000, ()=> { console.log('server started.')} );
 

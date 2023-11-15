@@ -1,24 +1,23 @@
 const mongoose = require("mongoose");
 
-const CommentSchema = mongoose.Schema();
+const CommentSchema = mongoose.Schema;
 
 const Comment = new CommentSchema({
-  userName: {
-    user: {
+  userId: {
       type: mongoose.SchemaTypes.ObjectId,
-      ref: "users",
-    },
+      ref: "User",
   },
 
-  blog: {
+  blogId: {
     type: mongoose.SchemaTypes.ObjectId,
-    ref: "blogs",
+    ref: "Blog",
   },
 
   commentText: {
     type: String,
     validate: {
       validator: (txt) => txt.trim().length !== 0,
+      message: '{VALUE} should not be empty'
     },
   },
   createdAt: {
@@ -31,4 +30,4 @@ const Comment = new CommentSchema({
   },
 });
 
-module.exports = mongoose.model("Comment", CommentSchema);
+module.exports = mongoose.model("Comment", Comment);
