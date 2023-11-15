@@ -49,4 +49,4 @@ async function signIn(req, res) {
   }
 }
 
-module.exports = { signUp };
+module.exports = { signUp, signIn };
