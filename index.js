@@ -1,7 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const userRouter = require('./routes/user');
-const userSignIn = require('./routes/userSignIn');
+const {signUpRouter, signInRouter} = require('./routes/user');
 const newBlog = require('./routes/blog');
 
 require('dotenv').config();
@@ -23,8 +22,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // routers 
-app.use(userRouter);
-app.use(userSignIn);
+app.use(signUpRouter);
+app.use(signInRouter);
 app.use(newBlog)
 
 app.listen(process.env.PORT || 8000, () => { console.log('server started.') });
