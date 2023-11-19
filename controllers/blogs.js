@@ -18,12 +18,11 @@ async function newBlog(req, res) {
 // gets all blogs
 async function allBlogs(req, res) {
   try {
-    const blogs = await Blog.find({}).then((blog) => {
-      res.send(blog);
-    });
+    const blogs = await Blog.find({});
     if (!blogs) {
       return res.status(404).send({ msg: "Blogs not found" });
     } else {
+      console.log(blogs);
       return res.status(200).send({
         blogs,
       });
@@ -36,21 +35,18 @@ async function allBlogs(req, res) {
 // gets one blog
 async function getBlog(req, res) {
   try {
-    const blog = await Blog.findById({ _id: req.body._id.toString() });
+    const blog = await Blog.findById(req.params.id).exec();
     if (!blog) {
       return res.status(404).send({ msg: "Such blog was not found" });
     } else {
+      console.log(blog);
       return res.status(200).send({
         msg: "Blog is found",
-        blog: {
-          title: req.body.title,
-          blogContent: req.body / blogContent,
-          createdBy: req.body.createdBy,
-        },
+        blog,
       });
     }
   } catch (error) {
-    res.status(500).send({ msg: "Something went wrong", error });
+    res.status(500).send({ msg: "Something went wrong", error: error.message });
   }
 }
 
