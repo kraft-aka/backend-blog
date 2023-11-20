@@ -28,6 +28,12 @@ const Comment = new CommentSchema({
     type: Date,
     default: () => Date.now(),
   },
+  likes: [
+    {
+      type: mongoose.SchemaTypes.ObjectId,
+      ref: "User",
+    },
+  ],
 });
 
 module.exports = mongoose.model("Comment", Comment);
