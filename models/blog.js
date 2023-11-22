@@ -36,10 +36,10 @@ const Blog = new BlogSchema({
       ref: "User",
     },
   ],
-  comments: [{
-    type: mongoose.SchemaTypes.ObjectId,
-    ref: 'Comment',
-  }]
+  // comments: [{
+  //   type: mongoose.SchemaTypes.ObjectId,
+  //   ref: 'Comment',
+  // }]
 });
 
 module.exports = mongoose.model("Blog", Blog);

@@ -6,11 +6,13 @@ const Comment = new CommentSchema({
   userId: {
       type: mongoose.SchemaTypes.ObjectId,
       ref: "User",
+      required: [true, 'Provide user id']
   },
 
   blogId: {
     type: mongoose.SchemaTypes.ObjectId,
     ref: "Blog",
+    required: [true, 'Provide blog id'],
   },
 
   commentText: {
