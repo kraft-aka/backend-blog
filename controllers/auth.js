@@ -22,18 +22,20 @@ async function signIn(req, res) {
     const user = await User.findOne({
       email: req.body.email,
     })
+    console.log(user)
     if (!user) {
-      return res.status(404).send({msg: 'User not found'})
-    } 
+      return res.status(404).send({ msg: 'User not found' })
+    }
     const passwordIsValid = bcrypt.compareSync(req.body.password, user.password)
+    console.log(passwordIsValid)
     if (!passwordIsValid) {
       return res.status(401).send({ msg: 'Invalid password' })
     }
     const token = jwt.sign({
       id: user.id,
 
-    }, proccess.env.API_SECRET, { expiresIn: 86400 })
-
+    }, process.env.API_SECRET, { expiresIn: 86400 })
+    console.log(token)
     res.status(200).send({
       msg: 'Signed In successfully',
       user: {
@@ -44,7 +46,8 @@ async function signIn(req, res) {
       token
     })
 
-  } catch(error) {  
+  } catch (error) {
+    console.log(error)
     res.status(500).send({ error });
   }
 }

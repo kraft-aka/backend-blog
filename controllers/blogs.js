@@ -2,7 +2,9 @@ const Blog = require("../models/blog");
 
 // creates a new blog
 async function newBlog(req, res) {
+  console.log(req.user.id)
   const blog = new Blog({
+    createdBy: req.user.id,
     title: req.body.title,
     blogContent: req.body.blogContent,
     createdBy: req.body.createdBy,

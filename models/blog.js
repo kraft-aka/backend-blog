@@ -6,7 +6,6 @@ const Blog = new BlogSchema({
   title: {
     type: String,
     required: true,
-    unique: [true, "Such blog title exists"],
     validate: {
       validator: (titleText) => titleText.trim().length > 0,
       message: '{VALUE} should be provided'
@@ -18,7 +17,6 @@ const Blog = new BlogSchema({
   },
   createdAt: {
     type: Date,
-    required: true,
     default: () => Date.now(),
   },
   updatedAt: {
@@ -28,6 +26,7 @@ const Blog = new BlogSchema({
   createdBy: {
     type: mongoose.SchemaTypes.ObjectId,
     ref: "User",
+    required: [true, 'user is required'],
   },
 
   likes: [
