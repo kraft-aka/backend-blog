@@ -1,11 +1,17 @@
 const express = require("express");
 const router = express.Router();
-const verifyUser = require('../utils/verifyUser');
+const verifyUser = require("../utils/verifyUser");
 
-const { newBlog, getBlog, allBlogs } = require("../controllers/blogs");
+const {
+  newBlog,
+  getBlog,
+  allBlogs,
+  deleteBlog,
+} = require("../controllers/blogs");
 
-const createBlogRouter = router.post("/newblog",verifyUser, newBlog);
+const createBlogRouter = router.post("/newblog", verifyUser, newBlog);
 const getAllBlogsRouter = router.get("/blogs", allBlogs);
 const getBlogRouter = router.get("/blogs/:id", getBlog);
+const deleteBlogRouter = router.delete("/blogs/deleteblog/:id", verifyUser, deleteBlog);
 
-module.exports = { createBlogRouter, getAllBlogsRouter, getBlogRouter };
+module.exports = { createBlogRouter, getAllBlogsRouter, getBlogRouter, deleteBlogRouter };

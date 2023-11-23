@@ -52,4 +52,21 @@ async function getBlog(req, res) {
   }
 }
 
-module.exports = { newBlog, allBlogs, getBlog };
+// deletes particular blog
+async function deleteBlog(req, res) {
+  try {
+    const blog = await Blog.findOneAndDelete({ 'createdBy': req.user.createdBy, '_id': req.blog.id }).exec();
+    if (!blog) {
+      return res.status(400).send({ msg: 'Blog not found' })
+    } else {
+      return res.status(200).send({ msg: 'Blog was deleted' })
+    }
+  } catch (error) {
+    res.status(400).send({ msg: 'Error occured', error: error.message })
+  }
+}
+
+module.exports = { newBlog, allBlogs, getBlog, deleteBlog };
+
+
+//TODO: fix deleteBlog 

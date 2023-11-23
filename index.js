@@ -1,7 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const { signUpRouter, signInRouter } = require('./routes/user');
-const { createBlogRouter, getAllBlogsRouter, getBlogRouter } = require('./routes/blog');
+const { createBlogRouter, getAllBlogsRouter, getBlogRouter, deleteBlogRouter } = require('./routes/blog');
 const { addComment } = require('./routes/comment');
 
 require('dotenv').config();
@@ -29,6 +29,7 @@ app.use(createBlogRouter);
 app.use(getAllBlogsRouter);
 app.use(getBlogRouter);
 app.use(addComment);
+app.use(deleteBlogRouter);
 
 
 app.listen(process.env.PORT || 8000, () => { console.log('server started.') });
