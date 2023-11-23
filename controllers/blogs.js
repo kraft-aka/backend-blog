@@ -54,8 +54,10 @@ async function getBlog(req, res) {
 
 // deletes particular blog
 async function deleteBlog(req, res) {
+  const id = req.params.id
+  console.log(id)
   try {
-    const blog = await Blog.findOneAndDelete({ 'createdBy': req.user.createdBy, '_id': req.blog.id }).exec();
+    const blog = await Blog.findByIdAndDelete(id);
     if (!blog) {
       return res.status(400).send({ msg: 'Blog not found' })
     } else {
