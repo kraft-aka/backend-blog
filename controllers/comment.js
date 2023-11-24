@@ -3,9 +3,10 @@ const Blog = require("../models/blog");
 
 // creates new comment
 async function newComment(req, res) {
+  console.log(req.params)
   const comment = new Comment({
-    userId: req.body.userId,
-    blogId: req.body.blogId,
+    userId: req.user.id,
+    blogId: req.params.blogId,
     commentText: req.body.commentText,
   });
   try {
@@ -36,7 +37,8 @@ async function getAllComments(req, res) {
 // updates comment
 async function editComment(req, res) {
   try {
-    const comment = await Comment.findByIdAndUpdate(req.params.id, { commentText: req.body.commentText }, { new: true });
+    console.log(comment)
+    const comment = await Comment.findByIdAndUpdate(req.user.id, req.params.blogId,{ commentText: req.body.commentText }, { new: true });
     if (!comment) {
       res.status(500).send({ msg: 'Error occured' })
     } else {

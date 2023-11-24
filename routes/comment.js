@@ -8,8 +8,8 @@ const {
   editComment,
 } = require("../controllers/comment");
 
-const addComment = router.post("/blogs/:id/comment", newComment);
+const addComment = router.post("/blogs/comment/:id",verifyUser, newComment);
 const getComments = router.get("/comments", getAllComments);
-const updateComment = router.put("/comments/:id", editComment);
+const updateComment = router.put("/comments/:id", verifyUser, editComment);
 
 module.exports = { addComment, getComments, updateComment };

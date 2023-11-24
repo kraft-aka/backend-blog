@@ -37,7 +37,7 @@ async function allBlogs(req, res) {
 // gets one blog
 async function getBlog(req, res) {
   try {
-    const blog = await Blog.findById(req.params.id).exec();
+    const blog = await Blog.findById(req.user.id).exec();
     if (!blog) {
       return res.status(404).send({ msg: "Such blog was not found" });
     } else {
@@ -54,7 +54,7 @@ async function getBlog(req, res) {
 
 // deletes particular blog
 async function deleteBlog(req, res) {
-  const id = req.params.id
+  const id = req.user.id
   console.log(id)
   try {
     const blog = await Blog.findByIdAndDelete(id);
@@ -71,4 +71,3 @@ async function deleteBlog(req, res) {
 module.exports = { newBlog, allBlogs, getBlog, deleteBlog };
 
 
-//TODO: fix deleteBlog 
