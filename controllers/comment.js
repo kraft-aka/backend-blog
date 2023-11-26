@@ -6,7 +6,7 @@ async function newComment(req, res) {
   console.log(req.params)
   const comment = new Comment({
     userId: req.user.id,
-    blogId: req.params.blogId,
+    blogId: req.params.id,
     commentText: req.body.commentText,
   });
   try {
@@ -37,8 +37,7 @@ async function getAllComments(req, res) {
 // updates comment
 async function editComment(req, res) {
   try {
-    console.log(comment)
-    const comment = await Comment.findByIdAndUpdate(req.user.id, req.params.blogId,{ commentText: req.body.commentText }, { new: true });
+    const comment = await Comment.findOneAndUpdate({_id: req.params.id, userId: req.user.id}, { commentText: req.body.commentText }, { new: true });
     if (!comment) {
       res.status(500).send({ msg: 'Error occured' })
     } else {
@@ -49,4 +48,18 @@ async function editComment(req, res) {
   }
 }
 
-module.exports = { newComment, getAllComments, editComment };
+// deletes comment
+async function deleteComment(req, res) {
+  try {
+    const comment = await Comment.findOneAndDelete({_id: req.params.id, userId: req.user.id});
+    if (!comment) {
+      res.status(404).send({ msg: 'No such comment' })
+    } else {
+      res.status(200).send({ msg: 'Comment was successfully removed' })
+    }
+  } catch (error) {
+    res.status(500).send({ msg: "Something went wrong", error: error.message });
+  }
+}
+
+module.exports = { newComment, getAllComments, editComment, deleteComment };

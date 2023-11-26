@@ -6,10 +6,12 @@ const {
   newComment,
   getAllComments,
   editComment,
+  deleteComment
 } = require("../controllers/comment");
 
-const addComment = router.post("/blogs/comment/:id",verifyUser, newComment);
-const getComments = router.get("/comments", getAllComments);
-const updateComment = router.put("/comments/:id", verifyUser, editComment);
+router.post("/blogs/comment/:id", verifyUser, newComment);
+router.get("/comments", getAllComments);
+router.put("/comments/:id", verifyUser, editComment);
+router.delete("/comments/deletecomment/:id", verifyUser, deleteComment);
 
-module.exports = { addComment, getComments, updateComment };
+module.exports = router;

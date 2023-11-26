@@ -2,12 +2,11 @@ const Blog = require("../models/blog");
 
 // creates a new blog
 async function newBlog(req, res) {
-  console.log(req.user.id)
+  console.log(req.user.id);
   const blog = new Blog({
     createdBy: req.user.id,
     title: req.body.title,
     blogContent: req.body.blogContent,
-    createdBy: req.body.createdBy,
   });
   try {
     const createdBlog = await blog.save();
@@ -37,7 +36,7 @@ async function allBlogs(req, res) {
 // gets one blog
 async function getBlog(req, res) {
   try {
-    const blog = await Blog.findById(req.user.id).exec();
+    const blog = await Blog.findById(req.params.id).exec();
     if (!blog) {
       return res.status(404).send({ msg: "Such blog was not found" });
     } else {
@@ -54,20 +53,66 @@ async function getBlog(req, res) {
 
 // deletes particular blog
 async function deleteBlog(req, res) {
-  const id = req.user.id
-  console.log(id)
   try {
-    const blog = await Blog.findByIdAndDelete(id);
+    const blog = await Blog.findOneAndDelete({
+      _id: req.params.id,
+      createdBy: req.user.id,
+    });
     if (!blog) {
-      return res.status(400).send({ msg: 'Blog not found' })
+      return res.status(400).send({ msg: "Blog not found" });
     } else {
-      return res.status(200).send({ msg: 'Blog was deleted' })
+      return res.status(200).send({ msg: "Blog was deleted" });
     }
   } catch (error) {
-    res.status(400).send({ msg: 'Error occured', error: error.message })
+    res.status(400).send({ msg: "Error occured", error: error.message });
   }
 }
 
-module.exports = { newBlog, allBlogs, getBlog, deleteBlog };
+// update blog
+async function editBlog(req, res) {
+  try {
+    const blog = await Blog.findOneAndUpdate(
+      { _id: req.params.id, createdBy: req.user.id },
+      { title: req.body.title, blogContent: req.body.blogContent },
+      { new: true }
+    );
+    if (!blog) {
+      return res.status(500).send({ msg: "Error occured" });
+    } else {
+      return res
+        .status(200)
+        .send({ msg: "Blog has been successfully updated", blog });
+    }
+  } catch (error) {
+    res.status(400).send({ msg: "Error occured", error: error.message });
+  }
+}
 
+// adding like to a blog
+async function addLike(req, res) {
+  try {
+    const blog = await Blog.findOne({
+      _id: req.params.id,
+      createdBy: req.user.id,
+    });
+    if (!blog) {
+      return res.status(404).send({ msg: "Blog is not found" });
+    } else {
+      if (
+        blog.likes.filter((like) => like.user.toString() === req.user.id)
+          .length > 0
+      ) {
+        return res.status(400).json({ msg: "User already liked this post" });
+      }
 
+      blog.likes.unshift({ user: req.user.id });
+
+      await blog.save();
+      return res.status(200).send({ msg: "Like added" });
+    }
+  } catch (error) {
+    res.status(400).send({ msg: "Error occured", error: error.message });
+  }
+}
+
+module.exports = { newBlog, allBlogs, getBlog, deleteBlog, editBlog, addLike };

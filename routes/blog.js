@@ -7,11 +7,15 @@ const {
   getBlog,
   allBlogs,
   deleteBlog,
+  editBlog,
+  addLike,
 } = require("../controllers/blogs");
 
-const createBlogRouter = router.post("/newblog", verifyUser, newBlog);
-const getAllBlogsRouter = router.get("/blogs", allBlogs);
-const getBlogRouter = router.get("/blogs/:id", getBlog);
-const deleteBlogRouter = router.delete("/blogs/deleteblog/:id",verifyUser, deleteBlog);
+router.post("/newblog", verifyUser, newBlog);
+router.get("/blogs", allBlogs);
+router.get("/blogs/:id", getBlog);
+router.delete("/blogs/deleteblog/:id", verifyUser, deleteBlog);
+router.put('/blogs/:id', verifyUser, editBlog);
+router.put("/blogs/likes/:id", verifyUser, addLike);
 
-module.exports = { createBlogRouter, getAllBlogsRouter, getBlogRouter, deleteBlogRouter };
+module.exports = router;

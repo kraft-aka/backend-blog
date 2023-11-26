@@ -31,9 +31,11 @@ const Blog = new BlogSchema({
 
   likes: [
     {
-      type: mongoose.SchemaTypes.ObjectId,
-      ref: "User",
-    },
+      user: {
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: 'User',
+      }
+    }
   ],
   // comments: [{
   //   type: mongoose.SchemaTypes.ObjectId,
