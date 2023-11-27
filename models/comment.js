@@ -4,9 +4,9 @@ const CommentSchema = mongoose.Schema;
 
 const Comment = new CommentSchema({
   userId: {
-      type: mongoose.SchemaTypes.ObjectId,
-      ref: "User",
-      required: [true, 'Provide user id']
+    type: mongoose.SchemaTypes.ObjectId,
+    ref: "User",
+    required: [true, 'Provide user id']
   },
 
   blogId: {
@@ -32,8 +32,10 @@ const Comment = new CommentSchema({
   },
   likes: [
     {
-      type: mongoose.SchemaTypes.ObjectId,
-      ref: "User",
+      user: {
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: "User",
+      },
     },
   ],
 });

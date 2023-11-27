@@ -37,7 +37,7 @@ async function getAllComments(req, res) {
 // updates comment
 async function editComment(req, res) {
   try {
-    const comment = await Comment.findOneAndUpdate({_id: req.params.id, userId: req.user.id}, { commentText: req.body.commentText }, { new: true });
+    const comment = await Comment.findOneAndUpdate({ _id: req.params.id, userId: req.user.id }, { commentText: req.body.commentText }, { new: true });
     if (!comment) {
       res.status(500).send({ msg: 'Error occured' })
     } else {
@@ -51,7 +51,7 @@ async function editComment(req, res) {
 // deletes comment
 async function deleteComment(req, res) {
   try {
-    const comment = await Comment.findOneAndDelete({_id: req.params.id, userId: req.user.id});
+    const comment = await Comment.findOneAndDelete({ _id: req.params.id, userId: req.user.id });
     if (!comment) {
       res.status(404).send({ msg: 'No such comment' })
     } else {
@@ -62,4 +62,28 @@ async function deleteComment(req, res) {
   }
 }
 
-module.exports = { newComment, getAllComments, editComment, deleteComment };
+// adds like to a comment
+async function addLiketoComment(req, res) {
+  try {
+    const comment = await Comment.findOne({ _id: req.params.id, userId: req.user.id });
+    if (!comment) {
+      res.status(400).send({ msg: 'There is no such comment' })
+    } else {
+      if (
+        comment.likes.filter((like) => like.user.toString() === req.user.id)
+          .length > 0
+      ) {
+        return res.status(400).json({ msg: "User already liked this comment" });
+      }
+
+      comment.likes.unshift({ user: req.user.id });
+
+      await comment.save();
+      return res.status(200).send({ msg: "Like added" });
+    }
+  } catch (error) {
+    res.status(500).send({ msg: "Something went wrong", error: error.message });
+  }
+}
+
+module.exports = { newComment, getAllComments, editComment, deleteComment, addLiketoComment };
