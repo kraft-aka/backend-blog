@@ -102,7 +102,7 @@ async function addLike(req, res) {
         blog.likes.filter((like) => like.user.toString() === req.user.id)
           .length > 0
       ) {
-        return res.status(400).json({ msg: "User already liked this post" });
+        return res.status(400).json({ msg: "User already liked this blog" });
       }
 
       blog.likes.unshift({ user: req.user.id });
@@ -115,4 +115,29 @@ async function addLike(req, res) {
   }
 }
 
-module.exports = { newBlog, allBlogs, getBlog, deleteBlog, editBlog, addLike };
+// removes like from blog
+async function removeLike(req, res) {
+  try {
+    const blog = await Blog.findOne({
+      _id: req.params.id,
+      createdBy: req.user.id,
+    });
+    if (!blog) {
+      return res.status(404).send({ msg: "Blog is not found" });
+    } else {
+      if (
+        blog.likes.filter((like) => like.user.toString() === req.user.id)
+          .length > 0
+      ) {
+        blog.likes.shift({ user: req.user.id });
+        await blog.save();
+        return res.status(200).send({ msg: "Like removed" });
+      }
+      return res.status(400).json({ msg: "User did not add like to this blog" });
+    }
+  } catch (error) {
+    res.status(400).send({ msg: "Error occured", error: error.message });
+  }
+}
+
+module.exports = { newBlog, allBlogs, getBlog, deleteBlog, editBlog, addLike, removeLike };
