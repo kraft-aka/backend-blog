@@ -65,7 +65,8 @@ async function deleteComment(req, res) {
 // adds like to a comment
 async function addLiketoComment(req, res) {
   try {
-    const comment = await Comment.findOne({ _id: req.params.id, userId: req.user.id });
+    const comment = await Comment.findOne({ _id: req.params.id });
+  
     if (!comment) {
       res.status(400).send({ msg: 'There is no such comment' })
     } else {
@@ -86,4 +87,29 @@ async function addLiketoComment(req, res) {
   }
 }
 
-module.exports = { newComment, getAllComments, editComment, deleteComment, addLiketoComment };
+// removes like from comment
+async function removeLikeFromComment(req, res) {
+  try {
+    const comment = await Comment.findOne({
+      _id: req.params.id,
+    });
+    if (!comment) {
+      return res.status(404).send({ msg: "Blog is not found" });
+    } else {
+      if (
+        comment.likes.filter((like) => like.user.toString() === req.user.id)
+          .length > 0
+      ) {
+        const idx = comment.likes.findIndex(item => item.user.toString() === req.user.id);
+        comment.likes.splice(idx, 1);
+        await comment.save();
+        return res.status(200).send({ msg: "Like removed" });
+      }
+      return res.status(400).json({ msg: "User did not add like to this comment" });
+    }
+  } catch (error) {
+    res.status(400).send({ msg: "Error occured", error: error.message });
+  }
+}
+
+module.exports = { newComment, getAllComments, editComment, deleteComment, addLiketoComment, removeLikeFromComment };

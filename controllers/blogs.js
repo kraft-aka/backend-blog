@@ -93,7 +93,6 @@ async function addLike(req, res) {
   try {
     const blog = await Blog.findOne({
       _id: req.params.id,
-      createdBy: req.user.id,
     });
     if (!blog) {
       return res.status(404).send({ msg: "Blog is not found" });
@@ -120,7 +119,6 @@ async function removeLike(req, res) {
   try {
     const blog = await Blog.findOne({
       _id: req.params.id,
-      createdBy: req.user.id,
     });
     if (!blog) {
       return res.status(404).send({ msg: "Blog is not found" });
@@ -129,7 +127,8 @@ async function removeLike(req, res) {
         blog.likes.filter((like) => like.user.toString() === req.user.id)
           .length > 0
       ) {
-        blog.likes.shift({ user: req.user.id });
+        const idx = blog.likes.findIndex(item => item.user.toString() === req.user.id);
+        blog.likes.splice(idx, 1);
         await blog.save();
         return res.status(200).send({ msg: "Like removed" });
       }

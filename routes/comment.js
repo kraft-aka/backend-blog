@@ -7,7 +7,8 @@ const {
   getAllComments,
   editComment,
   deleteComment,
-  addLiketoComment
+  addLiketoComment,
+  removeLikeFromComment
 } = require("../controllers/comment");
 
 router.post("/blogs/comment/:id", verifyUser, newComment);
@@ -15,5 +16,6 @@ router.get("/comments", getAllComments);
 router.put("/comments/:id", verifyUser, editComment);
 router.delete("/comments/deletecomment/:id", verifyUser, deleteComment);
 router.put("/comments/addlike/:id", verifyUser, addLiketoComment);
+router.delete("/comments/deletelike/:id", verifyUser, removeLikeFromComment)
 
 module.exports = router;
