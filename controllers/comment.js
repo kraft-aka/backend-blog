@@ -3,7 +3,6 @@ const Blog = require("../models/blog");
 
 // creates new comment
 async function newComment(req, res) {
-  console.log(req.params)
   const comment = new Comment({
     userId: req.user.id,
     blogId: req.params.id,
@@ -25,9 +24,9 @@ async function getAllComments(req, res) {
     const comments = await Comment.find({});
     console.log(comments);
     if (!comments) {
-      return res.status(404).send({ msg: 'There is no comments yet' })
+      return res.status(404).send({ msg: "There is no comments yet" });
     } else {
-      return res.status(200).send(comments)
+      return res.status(200).send(comments);
     }
   } catch (error) {
     res.status(500).send({ msg: "Something went wrong", error: error.message });
@@ -37,11 +36,15 @@ async function getAllComments(req, res) {
 // updates comment
 async function editComment(req, res) {
   try {
-    const comment = await Comment.findOneAndUpdate({ _id: req.params.id, userId: req.user.id }, { commentText: req.body.commentText }, { new: true });
+    const comment = await Comment.findOneAndUpdate(
+      { _id: req.params.id, userId: req.user.id },
+      { commentText: req.body.commentText },
+      { new: true }
+    );
     if (!comment) {
-      res.status(500).send({ msg: 'Error occured' })
+      res.status(500).send({ msg: "Error occured" });
     } else {
-      return res.status(200).send({ comment })
+      return res.status(200).send({ comment });
     }
   } catch (error) {
     res.status(500).send({ msg: "Something went wrong", error: error.message });
@@ -51,11 +54,14 @@ async function editComment(req, res) {
 // deletes comment
 async function deleteComment(req, res) {
   try {
-    const comment = await Comment.findOneAndDelete({ _id: req.params.id, userId: req.user.id });
+    const comment = await Comment.findOneAndDelete({
+      _id: req.params.id,
+      userId: req.user.id,
+    });
     if (!comment) {
-      res.status(404).send({ msg: 'No such comment' })
+      res.status(404).send({ msg: "No such comment" });
     } else {
-      res.status(200).send({ msg: 'Comment was successfully removed' })
+      res.status(200).send({ msg: "Comment was successfully removed" });
     }
   } catch (error) {
     res.status(500).send({ msg: "Something went wrong", error: error.message });
@@ -66,9 +72,9 @@ async function deleteComment(req, res) {
 async function addLiketoComment(req, res) {
   try {
     const comment = await Comment.findOne({ _id: req.params.id });
-  
+
     if (!comment) {
-      res.status(400).send({ msg: 'There is no such comment' })
+      res.status(400).send({ msg: "There is no such comment" });
     } else {
       if (
         comment.likes.filter((like) => like.user.toString() === req.user.id)
@@ -100,16 +106,52 @@ async function removeLikeFromComment(req, res) {
         comment.likes.filter((like) => like.user.toString() === req.user.id)
           .length > 0
       ) {
-        const idx = comment.likes.findIndex(item => item.user.toString() === req.user.id);
+        const idx = comment.likes.findIndex(
+          (item) => item.user.toString() === req.user.id
+        );
         comment.likes.splice(idx, 1);
         await comment.save();
         return res.status(200).send({ msg: "Like removed" });
       }
-      return res.status(400).json({ msg: "User did not add like to this comment" });
+      return res
+        .status(400)
+        .json({ msg: "User did not add like to this comment" });
     }
   } catch (error) {
     res.status(400).send({ msg: "Error occured", error: error.message });
   }
 }
 
-module.exports = { newComment, getAllComments, editComment, deleteComment, addLiketoComment, removeLikeFromComment };
+// adds reply to a comment
+async function addReply(req, res) {
+  try {
+    const { commentId } = req.params;
+    // const user = req.user.id;
+    const replyText = req.body.replyText;
+    console.log(commentId, "*****", replyText);
+
+    const comment = await Comment.findById(commentId);
+    if (!comment) {
+      return res.status(404).send({ msg: "Comment for this blog not found!" });
+    } else {
+      comment.replies.push({ replyText });
+      const savedComment = await comment.save();
+      console.log(savedComment);
+      return res
+        .status(200)
+        .send({ msg: `Reply to ${commentId} was successfully created.`, savedComment });
+    }
+  } catch (error) {
+    res.status(500).send({ msg: "Error occured", error: error.message });
+  }
+}
+
+module.exports = {
+  newComment,
+  getAllComments,
+  editComment,
+  deleteComment,
+  addLiketoComment,
+  removeLikeFromComment,
+  addReply,
+};

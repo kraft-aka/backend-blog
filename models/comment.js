@@ -38,6 +38,31 @@ const Comment = new CommentSchema({
       },
     },
   ],
+  replies: [
+    {
+      // user: {
+      //   type: mongoose.SchemaTypes.ObjectId,
+      //   ref: 'User',
+      // },
+      commentId: {
+        type: mongoose.SchemaTypes.ObjectId,
+        required: false,
+      },
+      createdAt: {
+        type: Date,
+        default: () => Date.now(),
+      },
+      replyText: {
+        type: String,
+        required: true,
+        validate: {
+          validator: (txt) => txt.trim().length !== 0,
+          message: '{VALUE} should not be empty'
+        },
+      }
+    }
+  ]
+  
 });
 
 module.exports = mongoose.model("Comment", Comment);

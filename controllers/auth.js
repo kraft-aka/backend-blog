@@ -6,7 +6,6 @@ async function signUp(req, res) {
   const user = new User({
     userName: req.body.userName,
     email: req.body.email,
-    role: req.body.role,
     password: bcrypt.hashSync(req.body.password, 8),
   });
   try {

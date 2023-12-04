@@ -23,11 +23,6 @@ const User = new UserSchema({
     type: String,
     required: [true, "Please provide correct password"],
   },
-  role: {
-    type: String,
-    enum: ["admin", "subscriber"],
-    required: [true, 'choose one of the options'],
-  },
 });
 
 module.exports = mongoose.model("User", User);
