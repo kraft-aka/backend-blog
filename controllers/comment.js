@@ -133,14 +133,25 @@ async function addReply(req, res) {
     const comment = await Comment.findById(commentId);
     if (!comment) {
       return res.status(404).send({ msg: "Comment for this blog not found!" });
-    } else {
-      comment.replies.push({ replyText });
+    } 
+    console.log(comment)
+      const newComment = new Comment({
+        userId: req.user.id,
+        blogId: comment.blogId,
+        commentText: req.body.replyText,
+        isReply: true,
+      })
+      const reply = await newComment.save();
+      if (!reply) {
+        return res.status(400).send({ msg: 'Failed to reply' })
+      } 
+      comment.replies.push({ commentId: reply.id });
       const savedComment = await comment.save();
       console.log(savedComment);
       return res
         .status(200)
         .send({ msg: `Reply to ${commentId} was successfully created.`, savedComment });
-    }
+    
   } catch (error) {
     res.status(500).send({ msg: "Error occured", error: error.message });
   }

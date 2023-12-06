@@ -17,6 +17,7 @@ const Comment = new CommentSchema({
 
   commentText: {
     type: String,
+    required: true,
     validate: {
       validator: (txt) => txt.trim().length !== 0,
       message: '{VALUE} should not be empty'
@@ -48,21 +49,26 @@ const Comment = new CommentSchema({
         type: mongoose.SchemaTypes.ObjectId,
         required: false,
       },
-      createdAt: {
-        type: Date,
-        default: () => Date.now(),
-      },
-      replyText: {
-        type: String,
-        required: true,
-        validate: {
-          validator: (txt) => txt.trim().length !== 0,
-          message: '{VALUE} should not be empty'
-        },
-      }
-    }
-  ]
-  
+      // createdAt: {
+      //   type: Date,
+      //   default: () => Date.now(),
+      // },
+      // replyText: {
+      //   type: String,
+      //   required: true,
+      //   validate: {
+      //     validator: (txt) => txt.trim().length !== 0,
+      //     message: '{VALUE} should not be empty'
+      //   },
+      // }
+    },
+
+  ],
+  isReply: {
+    type: Boolean,
+    default: false
+  }
+
 });
 
 module.exports = mongoose.model("Comment", Comment);
