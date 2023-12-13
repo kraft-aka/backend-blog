@@ -1,28 +1,34 @@
-const mongoose = require("mongoose");
+const mongoose = require("mongoose"); //import mongoose
 
-const UserSchema = mongoose.Schema;
+const UserSchema = mongoose.Schema; // create user schema using mongoose schema method
 
 const User = new UserSchema({
+  // create a User with Userschema with fields
   userName: {
-    type: String,
-    unique: [true, 'User with such username already exists'],
-    required: [true, "Please provide user name"],
+    // username is a field
+    type: String, // which is a type of String
+    unique: [true, "User with such username already exists"], // and must be unique in the collection
+    required: [true, "Please provide user name"], // is required and must have a value
   },
   email: {
-    type: String,
-    required: [true, "Please provide correct email"],
-    unique: [true, "Email already exists"],
-    lowercase: true,
-    trim: true,
+    // is a field
+    type: String, // which is a type of String
+    required: [true, "Please provide correct email"], // is required and maust have a value
+    unique: [true, "Email already exists"], // must be unique in the collection
+    lowercase: true, //must be in lowercase
+    trim: true, // must have no spaces
     validate: {
-      validator: (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email),
-      message: "{VALUE} is not valid email",
+      //validator
+      validator: (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email), // with custom validaitor method
+      message: "{VALUE} is not valid email", // error message which will be schown if validation fails
     },
   },
   password: {
-    type: String,
-    required: [true, "Please provide correct password"],
+    //password field
+    type: String, // type of String
+    required: [true, "Please provide correct password"], // is required and must have a value
   },
 });
 
+// export user model
 module.exports = mongoose.model("User", User);

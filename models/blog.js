@@ -1,46 +1,50 @@
-const mongoose = require("mongoose");
+const mongoose = require("mongoose"); // import mongoose
 
-const BlogSchema = mongoose.Schema;
+const BlogSchema = mongoose.Schema; // create a schema which is the method of mongoose
 
+// creat Blog schema
 const Blog = new BlogSchema({
   title: {
-    type: String,
-    required: true,
+    type: String, // type of data title is string
+    required: true, // which is required and must have a value
     validate: {
+      // validate has custom validator method to check the title
       validator: (titleText) => titleText.trim().length > 0,
-      message: '{VALUE} should be provided'
+      message: "{VALUE} should be provided", // error message unless to be sent
     },
   },
   blogContent: {
-    type: String,
-    required: [true, "Please type some text"],
+    // we define here the content of the blog
+    type: String, // which has a type of data String
+    required: [true, "Please type some text"], // is required and must have a value
   },
   createdAt: {
-    type: Date,
-    default: () => Date.now(),
+    // is to indicate when the blog was created
+    type: Date, // type has Date
+    default: () => Date.now(), // it will return actuall date by default
   },
   updatedAt: {
-    type: Date,
-    default: () => Date.now(),
+    // in case the cretated blog is updated, this will show the date of uts update
+    type: Date, // Date type
+    default: () => Date.now(), // returns actual date of update by default
   },
   createdBy: {
-    type: mongoose.SchemaTypes.ObjectId,
-    ref: "User",
-    required: [true, 'user is required'],
+    // this field shows the author of the blog
+    type: mongoose.SchemaTypes.ObjectId, // type is the ObjectId
+    ref: "User", // which refereces to User model-schema
+    required: [true, "user is required"], // this field is required and must have a value
   },
-
+  // likes is an array of objects
   likes: [
     {
       user: {
-        type: mongoose.SchemaTypes.ObjectId,
-        ref: 'User',
-      }
-    }
+        // which has user obj
+        type: mongoose.SchemaTypes.ObjectId, // type is ObjecId
+        ref: "User", //and is reference to User model
+      },
+    },
   ],
-  // comments: [{
-  //   type: mongoose.SchemaTypes.ObjectId,
-  //   ref: 'Comment',
-  // }]
 });
 
+// export blog model
 module.exports = mongoose.model("Blog", Blog);
