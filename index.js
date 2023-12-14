@@ -7,6 +7,7 @@ const commentRouter = require('./routes/comment');
 require('dotenv').config();
 const app = express();
 
+// connection to the mongoDb
 try {
   mongoose.connect(process.env.DB_URL, {});
   console.log('DB connceted.')
@@ -23,12 +24,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // routers 
-app.use(userRouter);
-app.use(blogRouter);
-app.use(commentRouter);
+app.use(userRouter); // user routes
+app.use(blogRouter); // blog routes
+app.use(commentRouter); // comment routes
 
 
 
-
+// connection to the app
 app.listen(process.env.PORT || 8000, () => { console.log('server started.') });
 
