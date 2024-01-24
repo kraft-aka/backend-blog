@@ -44,6 +44,9 @@ const Blog = new BlogSchema({
       },
     },
   ],
+  blogImage: {
+    type: String,
+  },
 });
 
 // export blog model

@@ -24,35 +24,12 @@ app.use(express.urlencoded({ extended: true }));
 
 // defualt options for file uploading
 app.use(fileUpload());
+app.use("/upload", express.static("upload"));
 
 // routers
 app.use(userRouter); // user routes
 app.use(blogRouter); // blog routes
 app.use(commentRouter); // comment routes
-
-app.get('/upload', (req,res)=> {
-  res.sendFile(__dirname+ '/upload.html')
-})
-
-app.post("/upload", function (req, res) {
-  let uploadFile;
-  let uploadPath;
-
-  if (!req.files || Object.keys(req.files).length === 0) {
-    return res.status(400).send("No files were uploaded.");
-  }
-
-  uploadFile = req.files.uploadFile;
-  uploadPath = __dirname + "/upload/" + uploadFile.name;
-  console.log(uploadFile)
-
-  // Use the mv() method to place the file somewhere on your server
-  uploadFile.mv(uploadPath, (err)=> {
-    if (err) return res.status(500).send(err);
-
-    res.send("File uploaded!");
-  });
-});
 
 // connection to the app
 app.listen(process.env.PORT || 8000, () => {
