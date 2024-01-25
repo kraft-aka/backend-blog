@@ -166,41 +166,49 @@ async function removeLike(req, res) {
 }
 
 async function addImage(req, res) {
-  if (!req.files || Object.keys(req.files).length === 0)
-    return res.status(400).send("No files were uploaded.");
-  if (Object.keys(req.files).length > 1)
-    return res.status(400).send("Only one file will be accepted.");
+  try {
+    if (!req.files || Object.keys(req.files).length === 0)
+      return res.status(400).send("No files were uploaded.");
+    if (Object.keys(req.files).length > 1)
+      return res.status(400).send("Only one file will be accepted.");
 
-  const uploadFile = req.files.uploadFile;
-  const id = req.params.id;
+    const uploadFile = req.files.uploadFile;
+    const id = req.params.id;
 
-  if (!uploadFile.mimetype.match("image")) {
-    return res.status(400).send({ msg: "Please upload an image" });
-  }
-  const blog = await Blog.findOne({
-    // finds and deletes one blog based on provided id, and the user created it
-    _id: req.params.id,
-    createdBy: req.user.id,
-  });
-  if (!blog) {
-    // If no blog was found, respond with a 400 status and an error msg
-    return res.status(400).send({ msg: "Blog not found" });
-  } else {
-    let fileExtensionName = uploadFile.name.split(".");
-    fileExtensionName = fileExtensionName[fileExtensionName.length - 1];
-    const uploadPath = path.join(
-      __dirname,
-      `../upload/${id}.${fileExtensionName}`
-    );
-
-    console.log(uploadPath);
-    uploadFile.mv(uploadPath, async (err) => {
-      if (err) return res.status(500).send(err);
-      blog.blogImage = `/upload/${id}.${fileExtensionName}`;
-
-      await blog.save();
-      return res.status(200).send({ msg: " File is uploaded " });
+    if (!uploadFile.mimetype.match("image")) {
+      return res.status(400).send({ msg: "Please upload an image" });
+    }
+    const blog = await Blog.findOne({
+      // finds and deletes one blog based on provided id, and the user created it
+      _id: req.params.id,
+      createdBy: req.user.id,
     });
+    if (!blog) {
+      // If no blog was found, respond with a 400 status and an error msg
+      return res.status(400).send({ msg: "Blog not found" });
+    } else {
+
+      // get file's extension type // jpeg, png, svg
+      let fileExtensionName = uploadFile.name.split(".");
+      fileExtensionName = fileExtensionName[fileExtensionName.length - 1];
+      
+      const uploadPath = path.join(
+        __dirname,
+        `../upload/${id}.${fileExtensionName}`
+      );
+
+
+      uploadFile.mv(uploadPath, async (err) => {
+        if (err) return res.status(500).send(err);
+        blog.blogImage = `/upload/${id}.${fileExtensionName}`;
+
+        await blog.save();
+        return res.status(200).send({ msg: " File is uploaded " });
+      });
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(400).send({ msg: "Error occured", error: error.message });
   }
 }
 
