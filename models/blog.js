@@ -46,7 +46,12 @@ const Blog = new BlogSchema({
   ],
   blogImage: {
     type: String,
+    default: null,
   },
+  blogUserIcon: {
+    type:mongoose.SchemaTypes.ObjectId,
+    ref: 'User',
+  }
 });
 
 // export blog model

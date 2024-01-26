@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken"); // import jsonwebtoken for token authentication
 const bcrypt = require("bcrypt"); // import bcrypt for passwrod hashing
 const User = require("../models/user"); // import user model to create new user
+const path = require("path");
 
 async function signUp(req, res) {
   const user = new User({
@@ -23,7 +24,7 @@ async function signIn(req, res) {
       // finds the user be their email
       email: req.body.email, //email is the value from req.body
     });
-    console.log(user);
+
     if (!user) {
       // if user is not found, return 404 response with the msg
       return res.status(404).send({ msg: "User not found" });
@@ -32,7 +33,7 @@ async function signIn(req, res) {
       req.body.password,
       user.password
     ); //compares the provided password with the hashed one stored in the db
-    console.log(passwordIsValid);
+
     if (!passwordIsValid) {
       // if passwords do not match, 401 response with msg will be sent
       return res.status(401).send({ msg: "Invalid password" });
@@ -45,7 +46,6 @@ async function signIn(req, res) {
       process.env.API_SECRET,
       { expiresIn: 86400 }
     ); // jwt uses secret to sign the token, and specifies the expiration date
-    console.log(token);
     res.status(200).send({
       // user is returned with success msg
       msg: "Signed In successfully",
@@ -58,9 +58,52 @@ async function signIn(req, res) {
     });
   } catch (error) {
     // handles any error that might occure during the authentication process
-    console.log(error);
     res.status(500).send({ error });
   }
 }
 
-module.exports = { signUp, signIn };
+async function addUserIcon(req, res) {
+  try {
+    if (!req.files || Object.keys(req.files).length === 0)
+      return res.status(400).send("No files were uploaded.");
+
+    if (Object.keys(req.files).length > 1)
+      return res.status(400).send("Only one file will be accepted.");
+
+    const uploadFile = req.files.uploadFile;
+
+    if (!uploadFile.mimetype.match("image")) {
+      return res.status(400).send({ msg: "Please upload an image" });
+    }
+    const user = await User.findOne({
+      // finds user by id
+      user: req.user.id,
+    });
+    console.log('---------', user);
+    if (!user) {
+      // If no blog was found, respond with a 400 status and an error msg
+      return res.status(400).send({ msg: "User not found" });
+    } else {
+      // get file's extension type // jpeg, png, svg
+      let fileExtensionName = uploadFile.name.split(".");
+      fileExtensionName = fileExtensionName[fileExtensionName.length - 1];
+
+      const uploadPath = path.join(
+        __dirname,
+        `../upload/${user.id}.${fileExtensionName}`
+      );
+
+      uploadFile.mv(uploadPath, async (err) => {
+        if (err) return res.status(500).send(err);
+        user.userIcon = `/upload/${user.id}.${fileExtensionName}`;
+
+        await user.save();
+        return res.status(200).send({ msg: "User's image is uploaded " });
+      });
+    }
+  } catch (error) {
+    res.status(400).send({ msg: "Error occured", error: error.message });
+  }
+}
+
+module.exports = { signUp, signIn, addUserIcon };

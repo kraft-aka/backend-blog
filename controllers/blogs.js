@@ -1,9 +1,9 @@
 const Blog = require("../models/blog");
 const path = require("path");
+const fs = require("fs");
 
 // creates a new blog
 async function newBlog(req, res) {
-  console.log(req.user.id);
   const blog = new Blog({
     // Creates a new Blog instance with data from the request
     createdBy: req.user.id, // createdBy field - user info is stored in req.user
@@ -47,7 +47,6 @@ async function getBlog(req, res) {
       // if there is no such blog with provided id, it sends res status 404 and msg
       return res.status(404).send({ msg: "Such blog was not found" });
     } else {
-      console.log(blog);
       return res.status(200).send({
         // otherwise it returns res status 200, msg, and a blog
         msg: "Blog is found",
@@ -187,16 +186,14 @@ async function addImage(req, res) {
       // If no blog was found, respond with a 400 status and an error msg
       return res.status(400).send({ msg: "Blog not found" });
     } else {
-
       // get file's extension type // jpeg, png, svg
       let fileExtensionName = uploadFile.name.split(".");
       fileExtensionName = fileExtensionName[fileExtensionName.length - 1];
-      
+
       const uploadPath = path.join(
         __dirname,
         `../upload/${id}.${fileExtensionName}`
       );
-
 
       uploadFile.mv(uploadPath, async (err) => {
         if (err) return res.status(500).send(err);
@@ -206,9 +203,44 @@ async function addImage(req, res) {
         return res.status(200).send({ msg: " File is uploaded " });
       });
     }
-  } catch (err) {
-    console.log(err);
+  } catch (error) {
+    console.log(error);
     res.status(400).send({ msg: "Error occured", error: error.message });
+  }
+}
+
+async function deleteImage(req, res) {
+  try {
+    const blog = await Blog.findOne({
+      // finds one blog based on provided id, and the user created it
+      _id: req.params.id,
+      createdBy: req.user.id,
+    });
+    if (!blog) {
+      // If no blog was found, respond with a 400 status and an error msg
+      return res.status(400).send({ msg: "Blog not found" });
+    }
+      // checks if blog's blogImage field is not null
+    if (blog.blogImage !== null) {
+      let img = blog.blogImage;
+      img = img.slice(1)
+      console.log(img)
+      // removes the file from directory
+      fs.unlink(img, async (error) => {
+        if (error) {
+          res.status(400).send({ msg: "No such file exists" });
+        } else {
+          blog.blogImage = null;
+          await blog.save();
+          res.status(200).send({ msg: "Image was successfully deleted." });
+        }
+      });
+    } else {
+      console.log('Blog has no image')
+    }
+  } catch (error) {
+    res.status(400).send({ msg: 'Error occured', error: error.message })
+    console.log(error);
   }
 }
 
@@ -221,4 +253,5 @@ module.exports = {
   addLike,
   removeLike,
   addImage,
+  deleteImage,
 };

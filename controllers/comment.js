@@ -23,7 +23,6 @@ async function newComment(req, res) {
 async function getAllComments(req, res) {
   try {
     const comments = await Comment.find({}); // finds all comments in db
-    console.log(comments);
     if (!comments) {
       // if no comments are found, respond with a 404 status and a msg
       return res.status(404).send({ msg: "There is no comments yet" });
@@ -145,14 +144,12 @@ async function addReply(req, res) {
     const { commentId } = req.params; //  extracts parameters and data from the request
     // const user = req.user.id;
     const replyText = req.body.replyText;
-    console.log(commentId, "*****", replyText);
 
     const comment = await Comment.findById(commentId); // Finds the parent comment by its id
     if (!comment) {
       // if the parent comment is not found, responds with a 404 status and a message
       return res.status(404).send({ msg: "Comment for this blog not found!" });
     }
-    console.log(comment);
     const newComment = new Comment({
       // Creates a new Comment for the reply
       userId: req.user.id,
@@ -167,7 +164,7 @@ async function addReply(req, res) {
     }
     comment.replies.push({ commentId: reply.id }); // updates the parent comment's replies array with the id of the new reply
     const savedComment = await comment.save(); // saves it
-    console.log(savedComment);
+
     return res // sends res status 200, success msg, and comment with reply
       .status(200)
       .send({

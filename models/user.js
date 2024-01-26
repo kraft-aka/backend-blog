@@ -28,6 +28,10 @@ const User = new UserSchema({
     type: String, // type of String
     required: [true, "Please provide correct password"], // is required and must have a value
   },
+  userIcon: {
+    type: String,
+    required: false,
+  }
 });
 
 // export user model
