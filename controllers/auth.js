@@ -2,6 +2,7 @@ const jwt = require("jsonwebtoken"); // import jsonwebtoken for token authentica
 const bcrypt = require("bcrypt"); // import bcrypt for passwrod hashing
 const User = require("../models/user"); // import user model to create new user
 const path = require("path");
+const fs = require("fs");
 
 async function signUp(req, res) {
   const user = new User({
@@ -62,7 +63,7 @@ async function signIn(req, res) {
   }
 }
 
-// adds user icon 
+// adds user icon
 async function addUserIcon(req, res) {
   try {
     const { id } = req.user.id;
@@ -79,7 +80,7 @@ async function addUserIcon(req, res) {
     }
     // finds user by id
     const user = await User.findOne({
-      id: id
+      id: id,
     });
 
     if (!user) {
@@ -108,4 +109,40 @@ async function addUserIcon(req, res) {
   }
 }
 
-module.exports = { signUp, signIn, addUserIcon };
+async function deleteUserIcon(req, res) {
+  try {
+    const { id } = req.user.id;
+    const user = await User.findOne({
+      // finds user based on provided id
+      id: id,
+    });
+    if (!user) {
+      // If no user was found, respond with a 400 status and an error msg
+      return res.status(400).send({ msg: "User not found" });
+    }
+    // checks if user's userIcon field is not null
+    if (user.userIcon !== null) {
+      let img = user.userIcon;
+      img = img.slice(1);
+
+      // removes the file from directory
+      fs.unlink(img, async (error) => {
+        if (error) {
+          res.status(400).send({ msg: "No such file exists" });
+        } else {
+          user.userIcon = null;
+          await user.save();
+          res.status(200).send({ msg: "Image was successfully deleted." });
+        }
+      });
+    } else {
+      console.log("User has no icon");
+      res.status(400).send({ msg: "User has no image" });
+    }
+  } catch (error) {
+    res.status(400).send({ msg: "Error occured", error: error.message });
+    console.log(error);
+  }
+}
+
+module.exports = { signUp, signIn, addUserIcon, deleteUserIcon };
