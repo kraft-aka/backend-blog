@@ -62,8 +62,10 @@ async function signIn(req, res) {
   }
 }
 
+// adds user icon 
 async function addUserIcon(req, res) {
   try {
+    const { id } = req.user.id;
     if (!req.files || Object.keys(req.files).length === 0)
       return res.status(400).send("No files were uploaded.");
 
@@ -75,13 +77,13 @@ async function addUserIcon(req, res) {
     if (!uploadFile.mimetype.match("image")) {
       return res.status(400).send({ msg: "Please upload an image" });
     }
+    // finds user by id
     const user = await User.findOne({
-      // finds user by id
-      user: req.user.id,
+      id: id
     });
-    console.log('---------', user);
+
     if (!user) {
-      // If no blog was found, respond with a 400 status and an error msg
+      // If no user was found, respond with a 400 status and an error msg
       return res.status(400).send({ msg: "User not found" });
     } else {
       // get file's extension type // jpeg, png, svg
@@ -90,12 +92,12 @@ async function addUserIcon(req, res) {
 
       const uploadPath = path.join(
         __dirname,
-        `../upload/${user.id}.${fileExtensionName}`
+        `../upload/${user.userName}.${fileExtensionName}`
       );
 
       uploadFile.mv(uploadPath, async (err) => {
         if (err) return res.status(500).send(err);
-        user.userIcon = `/upload/${user.id}.${fileExtensionName}`;
+        user.userIcon = `/upload/${user.userName}.${fileExtensionName}`;
 
         await user.save();
         return res.status(200).send({ msg: "User's image is uploaded " });

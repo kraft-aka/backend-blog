@@ -6,7 +6,7 @@ const verifyUser = require('../utils/verifyUser');
 
 router.post('/signUp', signUp); // route with url endpoint with POST HTTP method for creating a new user
 router.post('/signIn', signIn); // route with url endpoint with POST HTTP method for signing in
-router.post('/user/addIcon/:id', verifyUser,addUserIcon);
+router.post('/user/addIcon', verifyUser, addUserIcon);
 
 // export router 
 module.exports = router;

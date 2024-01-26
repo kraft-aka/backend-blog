@@ -31,6 +31,7 @@ const User = new UserSchema({
   userIcon: {
     type: String,
     required: false,
+    default: null,
   }
 });
 
