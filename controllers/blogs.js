@@ -22,7 +22,7 @@ async function newBlog(req, res) {
 async function allBlogs(req, res) {
   // gets all blog from the collection
   try {
-    const blogs = await Blog.find({}); // finds all blogs in the collection by find method
+    const blogs = await Blog.find({}).populate('createdBy'); // finds all blogs in the collection by find method
     if (!blogs) {
       // if there is no blog in db , it sends res status 404 and  msg
       return res.status(404).send({ msg: "Blogs not found" });
@@ -42,7 +42,7 @@ async function allBlogs(req, res) {
 // gets one blog
 async function getBlog(req, res) {
   try {
-    const blog = await Blog.findById(req.params.id).exec(); // finds a particular blog by id
+    const blog = await Blog.findById(req.params.id).populate('createdBy').exec(); // finds a particular blog by id
     if (!blog) {
       // if there is no such blog with provided id, it sends res status 404 and msg
       return res.status(404).send({ msg: "Such blog was not found" });
@@ -220,7 +220,7 @@ async function deleteImage(req, res) {
       // If no blog was found, respond with a 400 status and an error msg
       return res.status(400).send({ msg: "Blog not found" });
     }
-      // checks if blog's blogImage field is not null
+    // checks if blog's blogImage field is not null
     if (blog.blogImage !== null) {
       let img = blog.blogImage;
       img = img.slice(1)

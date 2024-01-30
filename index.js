@@ -4,9 +4,12 @@ const fileUpload = require("express-fileupload");
 const userRouter = require("./routes/user");
 const blogRouter = require("./routes/blog");
 const commentRouter = require("./routes/comment");
+const cors = require('cors');
 
 require("dotenv").config();
 const app = express();
+
+app.use(cors());
 
 // connection to the mongoDb
 try {
