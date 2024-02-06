@@ -22,7 +22,7 @@ async function newComment(req, res) {
 // gets all comments
 async function getAllComments(req, res) {
   try {
-    const comments = await Comment.find({}); // finds all comments in db
+    const comments = await Comment.find({}).populate('userId'); // finds all comments in db
     if (!comments) {
       // if no comments are found, respond with a 404 status and a msg
       return res.status(404).send({ msg: "There is no comments yet" });
