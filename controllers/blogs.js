@@ -22,12 +22,16 @@ async function newBlog(req, res) {
 async function allBlogs(req, res) {
   // gets all blog from the collection
   try {
-    const blogs = await Blog.find({}).populate('createdBy'); // finds all blogs in the collection by find method
+    const options = {}
+    if (req.query.user) {
+      options['createdBy'] = req.query.user
+    } 
+    const blogs = await Blog.find(options).populate('createdBy'); // finds all blogs in the collection by find method
+
     if (!blogs) {
       // if there is no blog in db , it sends res status 404 and  msg
       return res.status(404).send({ msg: "Blogs not found" });
     } else {
-      console.log(blogs);
       return res.status(200).send({
         // otherwise returns all blogs
         blogs,
@@ -204,7 +208,7 @@ async function addImage(req, res) {
       });
     }
   } catch (error) {
-    console.log(error);
+
     res.status(400).send({ msg: "Error occured", error: error.message });
   }
 }
@@ -224,7 +228,7 @@ async function deleteImage(req, res) {
     if (blog.blogImage !== null) {
       let img = blog.blogImage;
       img = img.slice(1)
-      console.log(img)
+
       // removes the file from directory
       fs.unlink(img, async (error) => {
         if (error) {
@@ -236,11 +240,11 @@ async function deleteImage(req, res) {
         }
       });
     } else {
-      console.log('Blog has no image')
+
     }
   } catch (error) {
     res.status(400).send({ msg: 'Error occured', error: error.message })
-    console.log(error);
+
   }
 }
 

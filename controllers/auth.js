@@ -136,12 +136,12 @@ async function deleteUserIcon(req, res) {
         }
       });
     } else {
-      console.log("User has no icon");
+
       res.status(400).send({ msg: "User has no image" });
     }
   } catch (error) {
     res.status(400).send({ msg: "Error occured", error: error.message });
-    console.log(error);
+
   }
 }
 
