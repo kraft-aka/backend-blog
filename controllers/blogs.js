@@ -22,12 +22,40 @@ async function newBlog(req, res) {
 async function allBlogs(req, res) {
   // gets all blog from the collection
   try {
-    const options = {}
+    const options = {};
     if (req.query.user) {
-      options['createdBy'] = req.query.user
-    } 
-    const blogs = await Blog.find(options).populate('createdBy'); // finds all blogs in the collection by find method
+      options["createdBy"] = req.query.user;
+    }
 
+    const page = parseInt(req.query.page);
+    const limit = parseInt(req.query.limit);
+
+    //get first and end indexes for the requested page
+    const startIndex = (page - 1) * limit;
+    const endIndex = page * limit;
+
+    const results = {};
+
+    const blogs = await Blog.find(options).populate("createdBy"); // finds all blogs in the collection by find method
+
+    results.blogsCount = blogs.length;
+    // slice the blogs and assign it to results const
+    results.results = blogs.slice(startIndex, endIndex);
+
+    if (startIndex > 0) {
+      results.previous = {
+        page: page - 1,
+        limit: limit,
+      };
+    }
+    if (endIndex < blogs.length) {
+      results.next = {
+        page: page + 1,
+        limit: limit,
+      };
+    }
+
+    console.log(results)
     if (!blogs) {
       // if there is no blog in db , it sends res status 404 and  msg
       return res.status(404).send({ msg: "Blogs not found" });
@@ -35,6 +63,7 @@ async function allBlogs(req, res) {
       return res.status(200).send({
         // otherwise returns all blogs
         blogs,
+        results,
       });
     }
   } catch (error) {
@@ -46,7 +75,9 @@ async function allBlogs(req, res) {
 // gets one blog
 async function getBlog(req, res) {
   try {
-    const blog = await Blog.findById(req.params.id).populate('createdBy').exec(); // finds a particular blog by id
+    const blog = await Blog.findById(req.params.id)
+      .populate("createdBy")
+      .exec(); // finds a particular blog by id
     if (!blog) {
       // if there is no such blog with provided id, it sends res status 404 and msg
       return res.status(404).send({ msg: "Such blog was not found" });
@@ -208,7 +239,6 @@ async function addImage(req, res) {
       });
     }
   } catch (error) {
-
     res.status(400).send({ msg: "Error occured", error: error.message });
   }
 }
@@ -227,7 +257,7 @@ async function deleteImage(req, res) {
     // checks if blog's blogImage field is not null
     if (blog.blogImage !== null) {
       let img = blog.blogImage;
-      img = img.slice(1)
+      img = img.slice(1);
 
       // removes the file from directory
       fs.unlink(img, async (error) => {
@@ -240,11 +270,9 @@ async function deleteImage(req, res) {
         }
       });
     } else {
-
     }
   } catch (error) {
-    res.status(400).send({ msg: 'Error occured', error: error.message })
-
+    res.status(400).send({ msg: "Error occured", error: error.message });
   }
 }
 
