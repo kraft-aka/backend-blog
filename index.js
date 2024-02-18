@@ -4,7 +4,7 @@ const fileUpload = require("express-fileupload");
 const userRouter = require("./routes/user");
 const blogRouter = require("./routes/blog");
 const commentRouter = require("./routes/comment");
-const cors = require('cors');
+const cors = require("cors");
 
 require("dotenv").config();
 const app = express();
@@ -13,7 +13,9 @@ app.use(cors());
 
 // connection to the mongoDb
 try {
-  mongoose.connect(process.env.DB_URL, {});
+  mongoose.connect(process.env.DB_URL, {
+    family: 4,
+  });
   console.log("DB connceted.");
 } catch (error) {
   console.log(error);
