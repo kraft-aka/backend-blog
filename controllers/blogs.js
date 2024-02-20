@@ -27,8 +27,11 @@ async function allBlogs(req, res) {
       options["createdBy"] = req.query.user;
     }
 
-    const page = parseInt(req.query.page);
-    const limit = parseInt(req.query.limit);
+    let page = parseInt(req.query.page, 10);
+    let limit = parseInt(req.query.limit, 10);
+
+    page = page ? page : 1;
+    limit = limit ? limit : 10;
 
     //get first and end indexes for the requested page
     const startIndex = (page - 1) * limit;
@@ -36,11 +39,15 @@ async function allBlogs(req, res) {
 
     const results = {};
 
-    const blogs = await Blog.find(options).populate("createdBy"); // finds all blogs in the collection by find method
+    const totalBlogs = await Blog.countDocuments(options);
 
-    results.blogsCount = blogs.length;
-    // slice the blogs and assign it to results const
-    results.results = blogs.slice(startIndex, endIndex);
+    const blogs = await Blog.find(options)
+      .skip(startIndex)
+      .limit(limit)
+      .sort({ createdAt: -1 })
+      .populate("createdBy"); // finds all blogs in the collection by find method
+
+    results.pages = Math.ceil(totalBlogs / limit);
 
     if (startIndex > 0) {
       results.previous = {
@@ -48,14 +55,14 @@ async function allBlogs(req, res) {
         limit: limit,
       };
     }
-    if (endIndex < blogs.length) {
+    if (endIndex < totalBlogs) {
       results.next = {
         page: page + 1,
         limit: limit,
       };
     }
 
-    console.log(results)
+    console.log(results);
     if (!blogs) {
       // if there is no blog in db , it sends res status 404 and  msg
       return res.status(404).send({ msg: "Blogs not found" });
