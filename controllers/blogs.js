@@ -18,6 +18,28 @@ async function newBlog(req, res) {
   }
 }
 
+// get all likes from blogs
+async function likesFromBlogs(req, res) {
+  try {
+    const id = req.user.id;
+    const blogs = await Blog.find({ createdBy: id })
+      .sort({ createdAt: -1 })
+      .populate("createdBy");
+
+    const blogsLikes = blogs
+      .filter((blog) => blog.likes.length > 0)
+      .reduce((a, b) => a + b.likes.length, 0);
+
+    if (!blogs) {
+      return res.status(500).send({ msg: "Blogs were not found!" });
+    } else {
+      return res.status(200).send({ blogsLikes });
+    }
+  } catch (error) {
+    res.status(500).send({ msg: "Something went wrong", error });
+  }
+}
+
 // gets all blogs
 async function allBlogs(req, res) {
   // gets all blog from the collection
@@ -293,4 +315,5 @@ module.exports = {
   removeLike,
   addImage,
   deleteImage,
+  likesFromBlogs,
 };

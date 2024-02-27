@@ -12,6 +12,7 @@ const {
   removeLike,
   addImage,
   deleteImage,
+  likesFromBlogs,
 } = require("../controllers/blogs");
 
 // routers
@@ -24,6 +25,7 @@ router.put("/blogs/likes/:id", verifyUser, addLike); // privat router with url e
 router.delete("/blogs/deletelike/:id", verifyUser, removeLike); // privat router with url endpoint, DELETE HHTP method for deleting a blog
 router.post('/blogs/addImage/:id', verifyUser, addImage);
 router.delete('/blogs/deleteImage/:id', verifyUser, deleteImage);
+router.get('/likes',verifyUser,likesFromBlogs);
 
 // export the router
 module.exports = router;
