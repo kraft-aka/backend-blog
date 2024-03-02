@@ -54,6 +54,7 @@ async function signIn(req, res) {
         id: user._id,
         email: user.email,
         userName: user.userName,
+        userIcon: user.userIcon
       },
       token, // new token is a string returned to the registered user
     });

@@ -23,8 +23,7 @@ async function likesFromBlogs(req, res) {
   try {
     const id = req.user.id;
     const blogs = await Blog.find({ createdBy: id })
-      .sort({ createdAt: -1 })
-      .populate("createdBy");
+      .sort({ createdAt: -1 }).select('likes')
 
     const blogsLikes = blogs
       .filter((blog) => blog.likes.length > 0)
