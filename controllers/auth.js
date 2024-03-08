@@ -25,6 +25,7 @@ async function signIn(req, res) {
       // finds the user be their email
       email: req.body.email, //email is the value from req.body
     });
+    console.log(user)
 
     if (!user) {
       // if user is not found, return 404 response with the msg
@@ -54,7 +55,7 @@ async function signIn(req, res) {
         id: user._id,
         email: user.email,
         userName: user.userName,
-        userIcon: user.userIcon
+        userIcon: user.userIcon,
       },
       token, // new token is a string returned to the registered user
     });
@@ -67,7 +68,7 @@ async function signIn(req, res) {
 // adds user icon
 async function addUserIcon(req, res) {
   try {
-    const { id } = req.user.id;
+    const id = req.user.id;
     if (!req.files || Object.keys(req.files).length === 0)
       return res.status(400).send("No files were uploaded.");
 
@@ -80,9 +81,7 @@ async function addUserIcon(req, res) {
       return res.status(400).send({ msg: "Please upload an image" });
     }
     // finds user by id
-    const user = await User.findOne({
-      id: id,
-    });
+    const user = await User.findById(id);
 
     if (!user) {
       // If no user was found, respond with a 400 status and an error msg
@@ -94,15 +93,17 @@ async function addUserIcon(req, res) {
 
       const uploadPath = path.join(
         __dirname,
-        `../upload/${user.userName}.${fileExtensionName}`
+        `../upload/users/${user.id}.${fileExtensionName}`
       );
 
       uploadFile.mv(uploadPath, async (err) => {
         if (err) return res.status(500).send(err);
-        user.userIcon = `/upload/${user.userName}.${fileExtensionName}`;
+        user.userIcon = `/upload/users/${user.id}.${fileExtensionName}`;
 
         await user.save();
-        return res.status(200).send({ msg: "User's image is uploaded " });
+        return res
+          .status(200)
+          .send({ msg: "User's image is uploaded ", userIcon: user.userIcon });
       });
     }
   } catch (error) {
@@ -137,12 +138,10 @@ async function deleteUserIcon(req, res) {
         }
       });
     } else {
-
       res.status(400).send({ msg: "User has no image" });
     }
   } catch (error) {
     res.status(400).send({ msg: "Error occured", error: error.message });
-
   }
 }
 
