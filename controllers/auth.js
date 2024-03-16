@@ -25,7 +25,7 @@ async function signIn(req, res) {
       // finds the user be their email
       email: req.body.email, //email is the value from req.body
     });
-    console.log(user)
+    console.log(user);
 
     if (!user) {
       // if user is not found, return 404 response with the msg
@@ -62,6 +62,29 @@ async function signIn(req, res) {
   } catch (error) {
     // handles any error that might occure during the authentication process
     res.status(500).send({ error });
+  }
+}
+
+// updates user's password
+async function updateUserPassword(req, res) {
+  try {
+    const updatedPassword = bcrypt.hashSync(req.body.password, 8);
+    const userId = req.user.id;
+    const user = await User.findByIdAndUpdate(
+      { _id: userId },
+      { password: updatedPassword },
+      { new: true }
+    );
+
+    if (!user) {
+      return res.status(500).send({ msg: "Could not update password." });
+    } else {
+      return res
+        .status(200)
+        .send({ msg: "Successfully updated password.", user });
+    }
+  } catch (error) {
+    res.status(500).send({ error, msg: "Error occured." });
   }
 }
 
@@ -145,4 +168,10 @@ async function deleteUserIcon(req, res) {
   }
 }
 
-module.exports = { signUp, signIn, addUserIcon, deleteUserIcon };
+module.exports = {
+  signUp,
+  signIn,
+  updateUserPassword,
+  addUserIcon,
+  deleteUserIcon,
+};
