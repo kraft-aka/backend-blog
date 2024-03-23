@@ -68,20 +68,28 @@ async function signIn(req, res) {
 // updates user's password
 async function updateUserPassword(req, res) {
   try {
-    const updatedPassword = bcrypt.hashSync(req.body.password, 8);
-    const userId = req.user.id;
-    const user = await User.findByIdAndUpdate(
-      { _id: userId },
-      { password: updatedPassword },
-      { new: true }
-    );
+    const oldPassword = req.body.oldPassword;
 
-    if (!user) {
+    const user = await User.findById(req.user.id);
+
+    const passwordIsValid = bcrypt.compareSync(oldPassword, user.password);
+
+    if (!passwordIsValid) {
+      return res.status(404).send({ msg: "Old password is not correct!" });
+    }
+
+    const updatedPassword = bcrypt.hashSync(req.body.password, 8);
+
+    user.password = updatedPassword;
+
+    const newUser = await user.save();
+
+    if (!newUser) {
       return res.status(500).send({ msg: "Could not update password." });
     } else {
       return res
         .status(200)
-        .send({ msg: "Successfully updated password.", user });
+        .send({ msg: "Successfully updated password.", newUser });
     }
   } catch (error) {
     res.status(500).send({ error, msg: "Error occured." });

@@ -49,30 +49,12 @@ const Comment = new CommentSchema({
     },
   ],
   replies: [
-    // replies field which is an array of objects
-    {
-      // user: {
-      //   type: mongoose.SchemaTypes.ObjectId,
-      //   ref: 'User',
-      // },
-      commentId: {
-        // and has a single prop commentId
-        type: mongoose.SchemaTypes.ObjectId, // has a type of ObjectId,
-        required: false, // required is turned to false
-      },
-      // createdAt: {
-      //   type: Date,
-      //   default: () => Date.now(),
-      // },
-      // replyText: {
-      //   type: String,
-      //   required: true,
-      //   validate: {
-      //     validator: (txt) => txt.trim().length !== 0,
-      //     message: '{VALUE} should not be empty'
-      //   },
-      // }
-    },
+    { 
+         // and has a single prop commentId
+         type: mongoose.SchemaTypes.ObjectId, // has a type of ObjectId,
+         required: false, // required is turned to false
+         ref: 'Comment'
+    }
   ],
   isReply: {
     // isReply is field ,

@@ -22,7 +22,14 @@ async function newComment(req, res) {
 // gets all comments
 async function getAllComments(req, res) {
   try {
-    const comments = await Comment.find({blogId: req.params.blogId}).sort({ createdAt:-1 }).populate('userId'); // finds all comments in db
+    const comments = await Comment.find({ blogId: req.params.blogId })
+      .sort({ createdAt: -1 })
+      .populate("userId")
+      .populate("replies")
+      .populate({
+        path: "replies",
+        populate: { path: "userId", model: "User" },
+      }); // finds all comments in db
     if (!comments) {
       // if no comments are found, respond with a 404 status and a msg
       return res.status(404).send({ msg: "There is no comments yet" });
@@ -162,7 +169,7 @@ async function addReply(req, res) {
       // If the reply is not saved, responds with a 400 status and a message
       return res.status(400).send({ msg: "Failed to reply" });
     }
-    comment.replies.push({ commentId: reply.id }); // updates the parent comment's replies array with the id of the new reply
+    comment.replies.push(reply.id); // updates the parent comment's replies array with the id of the new reply
     const savedComment = await comment.save(); // saves it
 
     return res // sends res status 200, success msg, and comment with reply
