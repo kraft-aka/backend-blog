@@ -171,12 +171,20 @@ async function addReply(req, res) {
     }
     comment.replies.push(reply.id); // updates the parent comment's replies array with the id of the new reply
     const savedComment = await comment.save(); // saves it
+    const updatedComment = await savedComment.populate([
+      "userId",
+      "replies",
+      {
+        path: "replies",
+        populate: { path: "userId", model: "User" },
+      },
+    ]);
 
     return res // sends res status 200, success msg, and comment with reply
       .status(200)
       .send({
         msg: `Reply to ${commentId} was successfully created.`,
-        savedComment,
+        updatedComment,
       });
   } catch (error) {
     // if an error occurs during the process, responds with a 500 status and an error message
